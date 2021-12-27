@@ -1,0 +1,175 @@
+#
+# This is free software, lisence use MIT.
+# 
+# Copyright (C) 2019 P3TERX <https://p3terx.com>
+# Copyright (C) 2020 KFERMercer <KFER.Mercer@gmail.com>
+# 
+# <https://github.com/KFERMercer/OpenWrt-CI>
+#
+
+name: OpenWrt-CI
+
+# 脚本执行时机
+on:
+  repository_dispatch:
+  workflow_dispatch:
+    inputs:
+      ssh:
+        description: 'SSH connection to Actions'
+        required: false
+        default: 'false'
+  # main分支有提交的时候
+  # push:
+  #   branches: 
+  #     - main
+  # 每月20号
+  # schedule:
+  #   - cron: 0 20 * * *
+  # 发布release的时候
+  # release:
+  #   types: [published]
+
+jobs:
+
+  build_openwrt:
+
+    name: Build OpenWrt firmware
+
+    runs-on: ubuntu-latest
+
+    if: github.event.repository.owner.id == github.event.sender.id
+
+    steps:
+
+      - name: Checkout coolsnowwolf/lede
+        uses: actions/checkout@v2
+        with:
+          repository: coolsnowwolf/lede
+          ref: master
+
+      - name: Checkout myconfig
+        uses: actions/checkout@v2
+        with:
+          ref: main
+          path: myconfig
+
+      - name: Space cleanup
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          docker rmi `docker images -q`
+          sudo rm -rf /usr/share/dotnet /etc/mysql /etc/php /etc/apt/sources.list.d /usr/local/lib/android
+          sudo -E apt-get -y purge azure-cli ghc* zulu* hhvm llvm* firefox google* dotnet* powershell openjdk* adoptopenjdk* mysql* php* mongodb* dotnet* moby* snapd* || true
+          sudo -E apt-get update
+          sudo -E apt-get -y install build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch python3 unzip zlib1g-dev lib32gcc1 libc6-dev-i386 subversion flex uglifyjs gcc-multilib g++-multilib p7zip p7zip-full msmtp libssl-dev texinfo libglib2.0-dev xmlto qemu-utils upx libelf-dev autoconf automake libtool autopoint device-tree-compiler antlr3 gperf swig libtinfo5
+          sudo -E apt-get -y autoremove --purge
+          sudo -E apt-get clean
+
+          df -h
+
+      - name: Update feeds
+        run: |
+          # helloworld国人必备，你懂的
+          # 先删除所有包含helloworld的行，再重新插入"src-git helloworld https://github.com/fw876/helloworld.git"
+          sed -i "/helloworld/d" "feeds.conf.default"
+          echo "src-git helloworld https://github.com/fw876/helloworld.git" >> "feeds.conf.default"
+
+          # 不用这个替换命令来取消#注释了，lede最新仓库已经把"#src-git helloworld"这行给删了
+          # sed -i 's/#src-git helloworld/src-git helloworld/g' ./feeds.conf.default
+          
+          ./scripts/feeds update -a
+          ./scripts/feeds install -a
+
+      - name: SSH connection to Actions
+        uses: P3TERX/ssh2actions@v1.0.0
+        if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') || contains(github.event.action, 'ssh')
+        env:
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+
+      - name: Copy .config
+        if: github.event.inputs.ssh == 'true'
+        run: |
+          rm -f ./myconfig/.config
+          cp ./.config ./myconfig/.config
+
+      - name: Commit update .config
+        if: github.event.inputs.ssh == 'true'
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: 'feat: auto update .config'
+          repository: ./myconfig
+
+      - name: Generate configuration file
+        if: github.event.inputs.ssh == 'false'
+        run: |
+          rm -f ./.config*
+          mv ./myconfig/.config ./
+
+          # 更改默认ip地址
+          sed -i 's/192.168.1.1/192.168.2.1/g' package/base-files/files/bin/config_generate
+
+          # 更改bcm53xx makefile，只编译k3固件(先注释所有的TARGET_开头的行，再把phicomm_k3这行打开)
+          sed -i 's|^TARGET_|# TARGET_|g; s|# TARGET_DEVICES += phicomm_k3|TARGET_DEVICES += phicomm_k3|' target/linux/bcm53xx/image/Makefile
+
+          make defconfig
+
+      - name: Make download
+        if: github.event.inputs.ssh == 'false'
+        run: |
+          make download -j8 || make download -j1 V=s
+          rm -rf $(find ./dl/ -size -1024c)
+          df -h
+
+      - name: Compile firmware
+        if: github.event.inputs.ssh == 'false'
+        run: |
+          make -j$(nproc) || make -j1 V=s
+          echo "======================="
+          echo "Space usage:"
+          echo "======================="
+          df -h
+          echo "======================="
+          du -h ./ --max-depth=1
+          du -h /mnt/openwrt/ --max-depth=1 || true
+
+      - name: Prepare artifact
+        if: github.event.inputs.ssh == 'false'
+        run: |
+          mkdir -p ./artifact/firmware
+          mkdir -p ./artifact/package
+          mkdir -p ./artifact/buildinfo
+          rm -rf $(find ./bin/targets/ -type d -name "packages")
+          cp -rf $(find ./bin/targets/ -type f) ./artifact/firmware/
+          cp -rf $(find ./bin/packages/ -type f -name "*.ipk") ./artifact/package/
+          cp -rf $(find ./bin/targets/ -type f -name "*.buildinfo" -o -name "*.manifest") ./artifact/buildinfo/
+
+      - name: Deliver buildinfo
+        if: github.event.inputs.ssh == 'false'
+        uses: actions/upload-artifact@v2
+        with:
+          name: OpenWrt_buildinfo
+          path: ./artifact/buildinfo/
+
+      - name: Deliver package
+        if: github.event.inputs.ssh == 'false'
+        uses: actions/upload-artifact@v2
+        with:
+          name: OpenWrt_package
+          path: ./artifact/package/
+
+      - name: Deliver firmware
+        if: github.event.inputs.ssh == 'false'
+        uses: actions/upload-artifact@v2
+        with:
+          name: OpenWrt_firmware
+          path: ./bin/targets/
+
+      - name: Upload release asset
+        if: (github.event == 'release' && github.event.inputs.ssh == 'false')
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.YOURTOKEN }}
+          file: ./artifact/firmware/*
+          tag: ${{ github.ref }}
+          file_glob: true
