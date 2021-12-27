@@ -112,6 +112,11 @@ jobs:
           # 更改bcm53xx makefile，只编译k3固件(先注释所有的TARGET_开头的行，再把phicomm_k3这行打开)
           sed -i 's|^TARGET_|# TARGET_|g; s|# TARGET_DEVICES += phicomm_k3|TARGET_DEVICES += phicomm_k3|' target/linux/bcm53xx/image/Makefile
 
+          # 取消bootstrap为默认主题：
+          sed -i '/set luci.main.mediaurlbase=\/luci-static\/bootstrap/d' feeds/luci/themes/luci-theme-bootstrap/root/etc/uci-defaults/30_luci-theme-bootstrap
+          # 修改bootstrap主题为argon主题：
+          sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' ./feeds/luci/collections/luci/Makefile
+
           make defconfig
 
       - name: Make download
