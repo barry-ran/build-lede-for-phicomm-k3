@@ -54,6 +54,12 @@
 所以最终效果是用户可以直接使用make defconfig结合本仓库自带的.config编译，如果失败了，再采用make menuconfig方式编译，同时自动更新.config文件，
 下次又可以使用make defconfig方式了，只有在必须的时候才使用make menuconfig，简化编译操作。
 
+## k3screenctrl发展史
+[updateing/k3screenctrl](https://github.com/updateing/k3screenctrl)(逆向做出第一版k3screenctrl) -> [RightFS/k3screenctrl](https://github.com/RightFS/k3screenctrl)(提供了屏幕固件的文件) -> [Hill-98/luci-app-k3screenctrl](https://github.com/Hill-98/luci-app-k3screenctrl)(添加了网页设置的支持) -> [zxlhhyccc/Hill-98-k3screenctrl](https://github.com/zxlhhyccc/Hill-98-k3screenctrl)(支持了天气) -> [lwz322/k3screenctrl](https://github.com/lwz322/k3screenctrl)(修复了天气导致屏幕卡死问题)
+
+- [k3screenctrl发展史](https://github.com/lwz322/k3screenctrl#%E5%8F%AF%E4%BB%A5%E5%85%AC%E5%BC%80%E7%9A%84%E6%83%85%E6%8A%A5)
+- [替换lede中k3screenctrl的方法](https://github.com/yangxu52/Phicomm-K2P-K3-OpenWrt-Firmware/blob/2efaffe30b1da709ae9c6c881f8462873ac06af5/PhicommK3/lede/part1.sh#L33)
+
 # 参考链接
 - [手动编译斐讯K3路由器OpenWRT固件，开启SSRP。极简配置，适合初学者](https://www.youtube.com/watch?v=IPk3q5rbtN8)
 - [使用 GitHub Actions 云编译 OpenWrt源码(主要参考，有.config完美生成流程)](https://github.com/P3TERX/Actions-OpenWrt)
