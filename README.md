@@ -34,9 +34,26 @@
 - 7. 完成后按Ctrl+D组合键或执行exit命令退出，退出时提示是否保存时选择Yes
 - 8. 按照正常情况的步骤再次编译即可
 
-# 推荐配置
+# 常用操作
+## 推荐配置
 - [PLUS+]将你的上网姿势设定为使用本机端口为5335的DNS服务，选择绕过某些IP模式
 - [PassW]将你的上网姿势设定为DNS模式-不使用，选择绕过某些IP模式
+
+## Aria2下载配置
+- 1. 编译的时候加上aira2：
+    ```
+    # Aria2 luci配置页面
+    CONFIG_PACKAGE_luci-app-aria2=y
+    # Aria2核心包
+    CONFIG_PACKAGE_aria2=y
+    # Aria2 下载管理页面（可选，luci-app-aria2会自带一个Aria-Ng，可以两个都按上，选自己喜欢的用）
+    CONFIG_PACKAGE_webui-aria2=y
+    ```
+- 2. 路由器管理界面开启aira2
+    1. 路由器接入硬盘/U盘
+    2. 在系统->挂载点找到已经挂载的硬盘，例如`/mnt/sda2`
+    3. 进入`Aria2`的`文件和目录`选项，修改`默认下载目录`为你的磁盘挂载路径：`/mnt/sda2`，保存配置
+    4. 这时候Aria2就启动了，界面上也出现Aria-Ng和webui-aria2了，点击去就能新建下载任务了
 
 # 关键技术
 ## .config怎么配置比较合适
