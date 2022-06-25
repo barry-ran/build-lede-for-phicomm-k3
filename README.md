@@ -27,7 +27,7 @@
     ```
 - 4. 复制SSH连接命令粘贴到终端内执行，或者复制链接在浏览器中打开使用网页终端。（网页终端可能会遇到黑屏的情况，按Ctrl+C即可）
 - 5. 执行make menuconfig进入配置界面
-- 6. 参考[手动编译斐讯K3路由器OpenWRT固件，开启SSRP。极简配置，适合初学者](https://www.youtube.com/watch?v=IPk3q5rbtN8)进行配置，其实主要选择三点：
+- 6. 参考[手动编译斐讯K3路由器OpenWRT固件，开启SSRP。极简配置，适合初学者](https://www.youtube.com/watch?v=IPk3q5rbtN8)进行配置，其实主要选择三点（当然想为其他品牌编译可以选择对应的Target和Target Profile，其他品牌的Target信息可以参考[这里](https://github.com/MrH723/Actions-OpenWrt/tree/main/config)）：
     - 1. Target选择带BCM53xx ARM的
     - 2. Target Profile选择PHCOMM K3
     - 3. （可选）根据需要在LuCI->Applications中选择额外安装的应用
