@@ -59,7 +59,7 @@ jobs:
       - name: Checkout myconfig
         uses: actions/checkout@v2
         with:
-          ref: main
+          ref: xiaomi-router-R3G
           path: myconfig
 
       - name: Space cleanup
