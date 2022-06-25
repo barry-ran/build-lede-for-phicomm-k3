@@ -90,6 +90,8 @@
 
 - [OpenWrt官方原版+lede包编译斐讯k3教程](https://gist.github.com/luoqeng/ad535fca4a87a1cfb9a9c1def151b837)
 
+- [其他路由器的config参考，主要知道Target和Target Profile选什么](https://github.com/MrH723/Actions-OpenWrt/tree/main/config)
+- [OpenWrt全网插件汇总-多种设备云编译](https://github.com/MrH723/Actions-OpenWrt)
 - [helloworld](https://github.com/fw876/helloworld)
 - [lede](https://github.com/coolsnowwolf/lede)
 

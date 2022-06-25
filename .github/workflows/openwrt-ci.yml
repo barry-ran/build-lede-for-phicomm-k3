@@ -50,6 +50,7 @@ jobs:
           fetch-depth: 0
 
       # k3screenctrl在commit:b442cc5 #8207 后无法正常运行，先回退到之前的commit，等待修复后再删除这一任务
+      # 目前已经修复，感兴趣可以更新lede最新版测试：https://github.com/coolsnowwolf/lede/commit/5e4693f2ac9bb1d4a06e059db22dace9bb45bf7d
       # https://github.com/coolsnowwolf/lede/issues/8279
       - name: Fix k3screenctrl
         run: |
