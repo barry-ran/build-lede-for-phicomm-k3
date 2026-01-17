@@ -42,13 +42,13 @@ jobs:
     steps:
 
       - name: Checkout coolsnowwolf/lede
-        uses: actions/checkout@v2
+        uses: actions/checkout@v6
         with:
           repository: coolsnowwolf/lede
           ref: 20251001
 
       - name: Checkout myconfig
-        uses: actions/checkout@v2
+        uses: actions/checkout@v6
         with:
           ref: xiaomi-router-R3G
           path: myconfig
@@ -145,21 +145,21 @@ jobs:
 
       - name: Deliver buildinfo
         if: github.event.inputs.ssh == 'false'
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v6
         with:
           name: OpenWrt_buildinfo
           path: ./artifact/buildinfo/
 
       - name: Deliver package
         if: github.event.inputs.ssh == 'false'
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v6
         with:
           name: OpenWrt_package
           path: ./artifact/package/
 
       - name: Deliver firmware
         if: github.event.inputs.ssh == 'false'
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v6
         with:
           name: OpenWrt_firmware
           path: ./bin/targets/
