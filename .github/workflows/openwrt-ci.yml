@@ -41,11 +41,11 @@ jobs:
 
     steps:
 
-      - name: Checkout coolsnowwolf/lede
+      - name: Checkout lede
         uses: actions/checkout@v6
         with:
-          repository: coolsnowwolf/lede
-          ref: 20251001
+          repository: barry-ran/lede
+          ref: b0c655430e50aa01b8aa89850d6f66f486cc5616
 
       - name: Checkout myconfig
         uses: actions/checkout@v6
