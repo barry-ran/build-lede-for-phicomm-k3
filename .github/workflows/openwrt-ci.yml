@@ -50,7 +50,7 @@ jobs:
       - name: Checkout myconfig
         uses: actions/checkout@v6
         with:
-          ref: phicomm-k3
+          ref: x86
           path: myconfig
 
       - name: Init env
