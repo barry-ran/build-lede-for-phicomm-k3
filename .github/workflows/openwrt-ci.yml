@@ -95,8 +95,8 @@ jobs:
         run: |
           # helloworld国人必备，你懂的
           # 先删除所有包含helloworld的行，再重新插入"src-git helloworld https://github.com/fw876/helloworld.git"
-          sed -i "/helloworld/d" "feeds.conf.default"
-          echo "src-git helloworld https://github.com/fw876/helloworld.git" >> "feeds.conf.default"
+          #sed -i "/helloworld/d" "feeds.conf.default"
+          #echo "src-git helloworld https://github.com/fw876/helloworld.git" >> "feeds.conf.default"
 
           # 不用这个替换命令来取消#注释了，lede最新仓库已经把"#src-git helloworld"这行给删了
           # sed -i 's/#src-git helloworld/src-git helloworld/g' ./feeds.conf.default
